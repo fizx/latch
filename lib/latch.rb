@@ -1,6 +1,8 @@
 require "thread"
+require "timeout"
 
 class Latch
+  class Timeout < ::Timeout::Error; end
   module Mixin
     def latch(count = 1, timeout = nil, &block)
       l = Latch.new(count)
@@ -27,5 +29,6 @@ class Latch
   
   def await(timeout = nil)
     @cv.wait(@mutex, timeout)
+    raise Latch::Timeout if @count > 0
   end
 end

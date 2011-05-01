@@ -27,15 +27,14 @@ describe "Latch" do
   
   it "should timeout" do
     start = Time.now
-    Latch::Mixin::latch(1, EPSILON) do |l|
-      Thread.new do
-        sleep 10
-        l.decr
+    proc {
+      Latch::Mixin::latch(1, EPSILON) do |l|
+        Thread.new do
+          sleep 10
+          l.decr
+        end
       end
-    end
-    delta = Time.now - start
-    delta.should > EPSILON
-    delta.should < 2 * EPSILON
+    }.should raise_error(Latch::Timeout)
   end
   
 end
