@@ -15,8 +15,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "latch"
   gem.homepage = "http://github.com/fizx/latch"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{This is a really simple countdown latch for Ruby.}
+  gem.description = %Q{This is a really simple countdown latch for Ruby.}
   gem.email = "kyle@kylemaxwell.com"
   gem.authors = ["Kyle Maxwell"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
