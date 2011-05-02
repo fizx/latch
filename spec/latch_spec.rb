@@ -1,11 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 EPSILON = 0.1
+ITEMS = 1
+
+class CustomError < StandardError; end
 
 describe "Latch" do
   it "should wait" do
     start = Time.now
-    l = Latch.new(1)
+    l = Latch.new(ITEMS)
     Thread.new do
       sleep EPSILON
       l.decr
@@ -28,13 +31,41 @@ describe "Latch" do
   it "should timeout" do
     start = Time.now
     proc {
-      Latch::Mixin::latch(1, EPSILON) do |l|
+      Latch::Mixin::latch(ITEMS, EPSILON) do |l|
         Thread.new do
           sleep 10
           l.decr
         end
       end
     }.should raise_error(Latch::Timeout)
+  end
+  
+  it "should raise the exception in the outer thread" do
+    start = Time.now
+    proc {
+      Latch::Mixin::latch(ITEMS, EPSILON) do |l|
+        Thread.new do
+          begin
+            l.fail(CustomError)
+          rescue => e
+            puts e.message
+          end
+        end
+      end
+    }.should raise_error(CustomError)
+  end
+  
+  it "should have sugar for catching exceptions" do
+    start = Time.now
+    proc {
+      Latch::Mixin::latch(ITEMS, EPSILON) do |l|
+        Thread.new do
+          l.try {
+            raise CustomError
+          }
+        end
+      end
+    }.should raise_error(CustomError)
   end
   
 end

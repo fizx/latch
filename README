@@ -1,1 +1,1 @@
-This is a really simple countdown latch for Ruby.
+This is a simple countdown latch for Ruby.  It's implemented under the covers with a Condition Variable.
