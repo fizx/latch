@@ -17,6 +17,16 @@ describe "Latch" do
     (Time.now - start).should > EPSILON
   end
   
+  it "should not race creation" do
+    start = Time.now
+    l = Latch.new(ITEMS)
+    Thread.new do
+      l.decr
+    end
+    l.await
+    (Time.now - start).should < EPSILON
+  end
+  
   it "should wait for the block" do
     start = Time.now
     Latch::Mixin::latch do |l|
@@ -38,21 +48,6 @@ describe "Latch" do
         end
       end
     }.should raise_error(Latch::Timeout)
-  end
-  
-  it "should raise the exception in the outer thread" do
-    start = Time.now
-    proc {
-      Latch::Mixin::latch(ITEMS, EPSILON) do |l|
-        Thread.new do
-          begin
-            l.fail(CustomError)
-          rescue => e
-            puts e.message
-          end
-        end
-      end
-    }.should raise_error(CustomError)
   end
   
   it "should have sugar for catching exceptions" do

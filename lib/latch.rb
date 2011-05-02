@@ -39,7 +39,7 @@ class Latch
   end
   
   def await(timeout = nil)
-    @cv.wait(@mutex, timeout)
+    @cv.wait(@mutex, timeout) if @count > 0
     raise @exception if @exception
     raise Latch::Timeout if @count > 0
   end
